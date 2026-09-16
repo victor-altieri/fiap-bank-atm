@@ -1,0 +1,9 @@
+**/target/
+.idea/
+*.iml
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.m2-cache/
