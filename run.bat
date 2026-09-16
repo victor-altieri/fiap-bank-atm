@@ -1,27 +1,22 @@
 @echo off
-chcp 65001 > nul
-echo ====================================================
-echo        FIAP BANK - EMULADOR DE CAIXA ELETRÔNICO
-echo ====================================================
-echo.
-echo Procurando o Maven do Apache NetBeans...
-
-set MVN_PATH="C:\Program Files\Apache NetBeans\java\maven\bin\mvn.cmd"
-
-if exist %MVN_PATH% (
-    echo Maven encontrado! Iniciando a aplicação...
-    call %MVN_PATH% clean compile exec:java
-) else (
-    echo.
-    echo [AVISO] Maven do NetBeans não encontrado no caminho padrão.
-    echo Tentando usar comando 'mvn' global...
-    where mvn >nul 2>nul
-    if %errorlevel% equ 0 (
-        call mvn clean compile exec:java
+setlocal
+cd /d "%~dp0"
+where mvn >nul 2>nul
+if errorlevel 1 (
+    if exist "C:\Program Files\Apache NetBeans\java\maven\bin\mvn.cmd" (
+        call "C:\Program Files\Apache NetBeans\java\maven\bin\mvn.cmd" package
     ) else (
-        echo [ERRO] Maven não encontrado. Por favor, abra este projeto
-        echo no Apache NetBeans e execute-o diretamente pelo editor,
-        echo ou instale o Maven e adicione-o ao seu PATH.
+        echo Maven nao encontrado. Configure Maven no PATH e Java 21 ou superior.
         pause
+        exit /b 1
     )
+) else (
+    call mvn package
 )
+if errorlevel 1 (
+    pause
+    exit /b 1
+)
+java -cp "presentation\target\presentation-1.0-SNAPSHOT-runtime.jar;infrastructure\target\infrastructure-1.0-SNAPSHOT-runtime.jar" com.fiap.bank.atm.AtmApplication
+if errorlevel 1 pause
+endlocal
